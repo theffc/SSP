@@ -35,14 +35,12 @@ import org.jasig.ssp.service.AbstractPersonAssocAuditableService;
 import org.jasig.ssp.service.EarlyAlertService;
 import org.jasig.ssp.service.MessageService;
 import org.jasig.ssp.service.ObjectNotFoundException;
-import org.jasig.ssp.service.PersonProgramStatusService;
 import org.jasig.ssp.service.PersonService;
 import org.jasig.ssp.service.SecurityService;
 import org.jasig.ssp.service.reference.ConfigService;
 import org.jasig.ssp.service.reference.EarlyAlertReasonService;
 import org.jasig.ssp.service.reference.EarlyAlertSuggestionService;
 import org.jasig.ssp.service.reference.MessageTemplateService;
-import org.jasig.ssp.service.reference.ProgramStatusService;
 import org.jasig.ssp.transferobject.EarlyAlertSearchResultTO;
 import org.jasig.ssp.transferobject.PagedResponse;
 import org.jasig.ssp.transferobject.form.EarlyAlertSearchForm;
@@ -74,7 +72,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-// total: 27 + 10 + 6 = 43
+// total: 20 + 6 + 6 = 32
 
 /**
  * EarlyAlert service implementation
@@ -107,15 +105,11 @@ public class EarlyAlertServiceImpl extends // NOPMD
 
 	// 1
 	@Autowired
-	private transient EarlyAlertReasonService earlyAlertReasonService;
+	private transient CreateEarlyAlert createEarlyAlert;
 
 	// 1
 	@Autowired
-	private transient EarlyAlertSuggestionService earlyAlertSuggestionService;
-
-	// 1
-	@Autowired
-	private transient PersonService personService;
+	private transient SaveEarlyAlert saveEarlyAlert;
 
 	// 1
 	@Autowired
@@ -139,8 +133,7 @@ public class EarlyAlertServiceImpl extends // NOPMD
 	@Transactional(rollbackFor = { ObjectNotFoundException.class, ValidationException.class })
 	public EarlyAlert create(@NotNull final EarlyAlert earlyAlert)
 			throws ObjectNotFoundException, ValidationException {
-		final CreateEarlyAlert create = new CreateEarlyAlert();
-		return create.create(earlyAlert);
+		return createEarlyAlert.create(earlyAlert);
 	}
 
 	@Override
@@ -218,60 +211,7 @@ public class EarlyAlertServiceImpl extends // NOPMD
 	@Override
 	public EarlyAlert save(@NotNull final EarlyAlert obj)
 			throws ObjectNotFoundException {
-		final EarlyAlert current = getDao().get(obj.getId());
-
-		current.setCourseName(obj.getCourseName());
-		current.setCourseTitle(obj.getCourseTitle());
-		current.setEmailCC(obj.getEmailCC());
-		current.setCampus(obj.getCampus());
-		current.setEarlyAlertReasonOtherDescription(obj
-				.getEarlyAlertReasonOtherDescription());
-		current.setComment(obj.getComment());
-		current.setClosedDate(obj.getClosedDate());
-
-		// 2
-		if ( obj.getClosedById() == null ) {
-			current.setClosedBy(null);
-		} else {
-			current.setClosedBy(personService.get(obj.getClosedById()));
-		}
-
-		// 2
-		if (obj.getPerson() == null) {
-			current.setPerson(null);
-		} else {
-			current.setPerson(personService.get(obj.getPerson().getId()));
-		}
-
-		// 1
-		final Set<EarlyAlertReason> earlyAlertReasons = new HashSet<EarlyAlertReason>();
-		// 1
-		if (obj.getEarlyAlertReasons() != null) {
-			// 1
-			for (final EarlyAlertReason reason : obj.getEarlyAlertReasons()) {
-				earlyAlertReasons.add(earlyAlertReasonService.load(reason
-						.getId()));
-			}
-		}
-
-		current.setEarlyAlertReasons(earlyAlertReasons);
-
-		// 1
-		final Set<EarlyAlertSuggestion> earlyAlertSuggestions = new HashSet<EarlyAlertSuggestion>();
-		// 1
-		if (obj.getEarlyAlertSuggestions() != null) {
-			// 1
-			for (final EarlyAlertSuggestion reason : obj
-					.getEarlyAlertSuggestions()) {
-				earlyAlertSuggestions.add(earlyAlertSuggestionService
-						.load(reason
-								.getId()));
-			}
-		}
-
-		current.setEarlyAlertSuggestions(earlyAlertSuggestions);
-
-		return getDao().save(current);
+		return saveEarlyAlert.save(obj);
 	}
 
 	@Override

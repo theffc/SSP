@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+// total: 16 + 8 = 24
+
 public class SendMessageToAdvisor {
 
     // 1
