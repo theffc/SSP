@@ -82,7 +82,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-// total: 93 + 56 + 6 = 155
+// total: 62 + 22 + 6 = 90
 
 /**
  * EarlyAlert service implementation
