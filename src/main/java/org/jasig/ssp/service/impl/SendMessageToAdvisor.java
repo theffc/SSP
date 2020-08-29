@@ -39,6 +39,17 @@ public class SendMessageToAdvisor {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(EarlyAlertServiceImpl.class);
 
+    /**
+     * Send e-mail ({@link Message}) to the assigned advisor for the student.
+     *
+     * @param earlyAlert
+     *            Early Alert
+     * @param emailCC
+     *            Email address to also CC this message
+     * @throws ObjectNotFoundException
+     * @throws SendFailedException
+     * @throws ValidationException
+     */
     public void send(@NotNull final EarlyAlert earlyAlert, // NOPMD
                      final String emailCC) throws ObjectNotFoundException,
             SendFailedException, ValidationException {
